@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farm Monitoring System</title>
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .neo-box {
+            border-radius: 20px;
+            background: #e0e5ec;
+            box-shadow: 20px 20px 60px #bec3c9, -20px -20px 60px #ffffff;
+        }
+        .neo-button {
+            border-radius: 10px;
+            background: #e0e5ec;
+            box-shadow: 5px 5px 15px #bec3c9, -5px -5px 15px #ffffff;
+            transition: all 0.3s ease;
+        }
+        .neo-button:active {
+            box-shadow: inset 5px 5px 10px #bec3c9, inset -5px -5px 10px #ffffff;
+        }
+        .sensor-card {
+            border-radius: 15px;
+            background: #e0e5ec;
+            box-shadow: 8px 8px 16px #bec3c9, -8px -8px 16px #ffffff;
+        }
+        #timerModal {
+            background: rgba(0,0,0,0.5);
+        }
+        body {
+            background: #e0e5ec;
+            font-family: 'Segoe UI', sans-serif;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Login Section -->
+    <div id="loginSection" class="flex items-center justify-center min-h-screen p-4">
+        <div class="neo-box p-8 w-full max-w-md">
+            <h2 class="text-2xl font-bold mb-6 text-gray-700 text-center">Farm Monitor Login</h2>
+            <form id="loginForm" class="space-y-4">
+                <div>
+                    <input type="email" placeholder="Email" class="w-full p-3 neo-button focus:outline-none" required>
+                </div>
+                <div>
+                    <input type="password" placeholder="Password" class="w-full p-3 neo-button focus:outline-none" required>
+                </div>
+                <button type="submit" class="w-full p-3 neo-button text-gray-700 font-semibold hover:opacity-90">
+                    Login
+                </button>
+                <p class="text-center text-gray-600">
+                    <a href="#" class="hover:text-gray-800">Forgot Password?</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Dashboard (Initially Hidden) -->
+    <div id="dashboard" class="hidden">
+        <!-- Navigation -->
+        <nav class="p-4 neo-box mb-4">
+            <div class="flex justify-between items-center">
+                <button id="menuBtn" class="neo-button p-2">
+                    <i class="bi bi-list text-2xl"></i>
+                </button>
+                <h1 class="text-xl font-bold text-gray-700">Farm Monitor</h1>
+                <button class="neo-button p-2 rounded-full">
+                    <i class="bi bi-person-circle text-2xl"></i>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="container mx-auto px-4">
+            <!-- Greeting -->
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-gray-700">Hello, User</h2>
+                <p class="text-gray-600">Welcome to Home Page</p>
+            </div>
+
+            <!-- Sensor Data -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div class="sensor-card p-4">
+                    <div class="text-center">
+                        <i class="bi bi-thermometer-half text-3xl text-blue-500"></i>
+                        <h3 class="text-lg font-semibold">Temperature</h3>
+                        <p class="text-2xl font-bold text-gray-700">24°C</p>
+                    </div>
+                </div>
+                <div class="sensor-card p-4">
+                    <div class="text-center">
+                        <i class="bi bi-moisture text-3xl text-green-500"></i>
+                        <h3 class="text-lg font-semibold">Humidity</h3>
+                        <p class="text-2xl font-bold text-gray-700">65%</p>
+                    </div>
+                </div>
+                <div class="sensor-card p-4">
+                    <div class="text-center">
+                        <i class="bi bi-water text-3xl text-blue-500"></i>
+                        <h3 class="text-lg font-semibold">Soil Moisture</h3>
+                        <p class="text-2xl font-bold text-gray-700">45%</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Control Panel -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <button class="neo-button p-4 text-center" onclick="showTimer('Solar Pump')">
+                    <i class="bi bi-sun text-2xl text-yellow-500"></i>
+                    <p class="mt-2">Solar Pump</p>
+                </button>
+                <button class="neo-button p-4 text-center" onclick="showTimer('Battery Pump')">
+                    <i class="bi bi-battery-charging text-2xl text-green-500"></i>
+                    <p class="mt-2">Battery Pump</p>
+                </button>
+                <button class="neo-button p-4 text-center" onclick="showTimer('Light')">
+                    <i class="bi bi-lightbulb text-2xl text-yellow-500"></i>
+                    <p class="mt-2">Light</p>
+                </button>
+                <button class="neo-button p-4 text-center" onclick="showTimer('Siren')">
+                    <i class="bi bi-volume-up text-2xl text-red-500"></i>
+                    <p class="mt-2">Siren</p>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Timer Modal -->
+    <div id="timerModal" class="fixed inset-0 hidden flex items-center justify-center">
+        <div class="neo-box p-6 w-11/12 max-w-md">
+            <h3 id="timerTitle" class="text-xl font-bold mb-4 text-gray-700">Set Timer</h3>
+            <div class="space-y-4">
+                <div class="grid grid-cols-3 gap-4">
+                    <input type="number" placeholder="Hours" class="neo-button p-2 text-center" min="0">
+                    <input type="number" placeholder="Minutes" class="neo-button p-2 text-center" min="0">
+                    <input type="number" placeholder="Seconds" class="neo-button p-2 text-center" min="0">
+                </div>
+                <div class="flex justify-end space-x-4">
+                    <button onclick="closeTimer()" class="neo-button px-4 py-2">Cancel</button>
+                    <button onclick="setTimer()" class="neo-button px-4 py-2 bg-blue-500 text-white">Set</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Login Form Handler
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+        });
+
+        // Timer Modal Functions
+        function showTimer(device) {
+            document.getElementById('timerTitle').textContent = `Set Timer for ${device}`;
+            document.getElementById('timerModal').classList.remove('hidden');
+        }
+
+        function closeTimer() {
+            document.getElementById('timerModal').classList.add('hidden');
+        }
+
+        function setTimer() {
+            // Timer logic would go here
+            closeTimer();
+        }
+
+        // Simulate real-time sensor updates
+        setInterval(() => {
+            const temp = Math.floor(Math.random() * 10) + 20;
+            const humidity = Math.floor(Math.random() * 30) + 50;
+            const soil = Math.floor(Math.random() * 40) + 30;
+            
+            document.querySelectorAll('.sensor-card p').forEach((el, i) => {
+                if (i === 0) el.textContent = `${temp}°C`;
+                if (i === 1) el.textContent = `${humidity}%`;
+                if (i === 2) el.textContent = `${soil}%`;
+            });
+        }, 5000);
+    </script>
+<script>document.body.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); return }, { passive: false })</script>
+	</body>
+</html>
